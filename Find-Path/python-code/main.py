@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import heapq
 
 df = pd.read_csv('Flight_Data.csv')
 #print(df)
@@ -47,4 +48,25 @@ def dijkstra(graph, source, destination):
                 pervious[neighbor] = cur_node
                 heapq.heappush(priority_queue, (new_distance, neighbor))
 
+
+
+# get path from source to destination
+def get_path(pervious, destination):
+    path = []
+    current = destination
+    while current is not None:
+        path.insert(0, current)
+        current = pervious[current]
+    return path
+
+
+# test dijkstra algorithm
+airport_source = 'Imam Khomeini International Airport'
+airport_destination = 'Raleigh Durham International Airport'
+
+min_distance, pervious = dijkstra(graph, airport_source, airport_destination)
+path = get_path(pervious, airport_destination)
+
+print(min_distance)
+print(" > ".join(path))
 
