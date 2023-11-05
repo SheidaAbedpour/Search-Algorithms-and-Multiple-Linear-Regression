@@ -8,18 +8,11 @@ df = pd.read_csv('Flight_Data.csv')
 
 
 # compte weight of graph based on distance, price and flyTime
-def compute_weight(source, destination):
+def compute_weight(distance, price, flyTime):
 
     w_distance = 0.7
     w_price = 0.2
     w_flyTime = 0.1
-
-    row = df[df['SourceAirport'] == source].iloc[0]
-    index = df[df.eq(row).all(axis=1)].index[0]
-
-    distance = df['Distance'][index]
-    price = df['Price'][index]
-    flyTime = df['FlyTime'][index]
 
     weight = (w_distance * distance) + (w_price * price) + (w_flyTime * flyTime)
     return weight
@@ -35,7 +28,7 @@ for i, row in df.iterrows():
         graph[source] = {}
     if destination not in graph:
         graph[destination] = {}
-    graph[source][destination] = compute_weight(source, destination)
+    graph[source][destination] = compute_weight(row['Distance'], row['Price'], row['FlyTime'])
 
 
 
@@ -123,15 +116,11 @@ def heurestic(source, destination):
     d2 = d2_source - d2_destination
     d3 = d3_source - d3_destination
 
-    w_distance = 0.7
-    w_price = 0.2
-    w_flyTime = 0.1
-
     distance = math.sqrt(d1 ** 2 + d2 ** 2 + d3 ** 2)
     price = df['Price'][index_source]
     flyTime = df['FlyTime'][index_source]
 
-    weight = (w_distance * distance) + (w_price * price) + (w_flyTime * flyTime)
+    weight = compute_weight(distance, price, flyTime)
     return weight
 
 
