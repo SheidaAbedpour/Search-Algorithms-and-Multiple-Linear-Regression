@@ -102,14 +102,15 @@ print("time : ", time)
 
 # A* algorithm
 
-def heurestic(row_source, row_destination):
-    d1_source = row_source['SourceAirport_Latitude']
-    d2_source = row_source['SourceAirport_Longitude']
-    d3_source = row_source['SourceAirport_Altitude']
+def heurestic_distance(source, destination):
 
-    d1_destination = row_destination['DestinationAirport_Latitude']
-    d2_destination = row_destination['DestinationAirport_Longitude']
-    d3_destination = row_destination['DestinationAirport_Altitude']
+    d1_source = location[source][0]
+    d2_source = location[source][1]
+    d3_source = location[source][2]
+
+    d1_destination = location[destination][0]
+    d2_destination = location[destination][1]
+    d3_destination = location[destination][2]
 
     d1 = d1_source - d1_destination
     d2 = d2_source - d2_destination
@@ -130,11 +131,8 @@ def a_star(graph, source, destination):
     priority_queue = [(0, source)]
     pervious = {n: None for n in graph.keys()}
 
-    row_source = df[df['SourceAirport'] == source].iloc[0]
-    row_destination = df[df['DestinationAirport'] == destination].iloc[0]
-
     g[source] = 0
-    f[source] = heurestic(row_source, row_destination)
+    f[source] = heurestic_distance(source, destination)
 
     while priority_queue:
         cur_distance, cur_node = heapq.heappop(priority_queue)
@@ -145,7 +143,7 @@ def a_star(graph, source, destination):
             new_distance = g[cur_node] + weight
             if new_distance < g[neighbor]:
                 g[neighbor] = new_distance
-                f[neighbor] = g[neighbor] + heurestic(row, row_destination)
+                f[neighbor] = g[neighbor] + heurestic_distance(neighbor, destination)
                 pervious[neighbor] = cur_node
                 heapq.heappush(priority_queue, (f[neighbor], neighbor))
 
