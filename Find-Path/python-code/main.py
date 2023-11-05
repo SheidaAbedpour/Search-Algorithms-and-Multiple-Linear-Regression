@@ -7,6 +7,25 @@ df = pd.read_csv('Flight_Data.csv')
 #print(df)
 
 
+# compte weight of graph based on distance, price and flyTime
+def compute_weight(source, destination):
+
+    w_distance = 0.7
+    w_price = 0.2
+    w_flyTime = 0.1
+
+    row = df[df['SourceAirport'] == source].iloc[0]
+    index = df[df.eq(row).all(axis=1)].index[0]
+
+    distance = df['Distance'][index]
+    price = df['Price'][index]
+    flyTime = df['FlyTime'][index]
+
+    weight = (w_distance * distance) + (w_price * price) + (w_flyTime * flyTime)
+    return weight
+
+
+
 # create graph of airports
 graph = {}
 for i, row in df.iterrows():
@@ -16,7 +35,7 @@ for i, row in df.iterrows():
         graph[source] = {}
     if destination not in graph:
         graph[destination] = {}
-    graph[source][destination] = i
+    graph[source][destination] = compute_weight(source, destination)
 
 
 
@@ -27,7 +46,7 @@ def dijkstra(graph, source, destination):
     distances = {n: float('inf') for n in graph.keys()}
     distances[source] = 0
 
-    priority_queue = [(0, source)]  # (distance, node)
+    priority_queue = [(0, source)]
 
     # store the path
     pervious = {n: None for n in graph.keys()}
@@ -41,8 +60,7 @@ def dijkstra(graph, source, destination):
             return cur_distance, pervious
 
         # update distance of neighbors
-        for neighbor, index in graph[cur_node].items():
-            weight = df.loc[index, 'Distance']
+        for neighbor, weight in graph[cur_node].items():
             new_distance = cur_distance + weight
             if new_distance < distances[neighbor]:
                 distances[neighbor] = new_distance
@@ -105,8 +123,16 @@ def heurestic(source, destination):
     d2 = d2_source - d2_destination
     d3 = d3_source - d3_destination
 
-    heurestic = math.sqrt(d1 ** 2 + d2 ** 2 + d3 ** 2)
-    return heurestic
+    w_distance = 0.7
+    w_price = 0.2
+    w_flyTime = 0.1
+
+    distance = math.sqrt(d1 ** 2 + d2 ** 2 + d3 ** 2)
+    price = df['Price'][index_source]
+    flyTime = df['FlyTime'][index_source]
+
+    weight = (w_distance * distance) + (w_price * price) + (w_flyTime * flyTime)
+    return weight
 
 
 def a_star(graph, source, destination):
@@ -130,8 +156,7 @@ def a_star(graph, source, destination):
             return cur_distance, pervious
 
         # update distance of neighbors
-        for neighbor, index in graph[cur_node].items():
-            weight = df.loc[index, 'Distance']
+        for neighbor, weight in graph[cur_node].items():
             new_distance = g[cur_node] + weight
             if new_distance < g[neighbor]:
                 g[neighbor] = new_distance
@@ -141,12 +166,8 @@ def a_star(graph, source, destination):
 
 
 # test A* algorithm
-min_d, pervious = a_star(graph, airport_source, airport_destination)
-path = get_path(pervious, airport_destination)
+#min_d, pervious = a_star(graph, airport_source, airport_destination)
+#path = get_path(pervious, airport_destination)
 
-print(min_d)
-print(" > ".join(path))
-
-
-
-
+#print(min_d)
+#print(" > ".join(path))
