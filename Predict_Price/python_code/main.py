@@ -30,3 +30,18 @@ def compute_f(x, w, b):
     f_wb_i = np.dot(x, w) + b
     return f_wb_i
 
+
+# cost function to compute error usin MSE method
+def compute_cost(X, w, b, Y):
+    m = len(X)  # size of trainig data
+    error = 0.0
+    for i in range(m):
+        error += ((compute_f(X[i], w, b) - Y[i]) ** 2)
+        #print("f: ", compute_f(X[i], w, b), "   y: ", Y[i])
+    error_w = 0.0
+    for j in range(len(w)):
+        error_w += w[j] ** 2
+    j = error / (2 * m)
+    #+ ((1 / (2 * m)) * error_w)
+    return j
+
