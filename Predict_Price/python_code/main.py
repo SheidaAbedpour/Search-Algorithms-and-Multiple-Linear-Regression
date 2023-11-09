@@ -84,3 +84,17 @@ def compute_gradient_descent(X, Y, w_in, b_in, alpha, num_iterations):
         print("iteration: ", i, "   cost: ", cost)
 
     return w, b
+
+
+
+# test
+initial_w = np.random.rand(len(x_train[0]))
+initial_b = 10000
+alpha = 0.001
+num_itr = 100
+
+print("start processing")
+
+w, b = compute_gradient_descent(x_train, y_train, initial_w, initial_b, alpha, num_itr)
+
+print("w: ", w, "   b: ", b)
