@@ -25,5 +25,8 @@ x_train, x_test, y_train , y_test = train_test_split(x_dataset, y_dataset, test_
 
 
 
-
+# pridict output
+def compute_f(x, w, b):
+    f_wb_i = np.dot(x, w) + b
+    return f_wb_i
 
