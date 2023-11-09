@@ -45,3 +45,19 @@ def compute_cost(X, w, b, Y):
     #+ ((1 / (2 * m)) * error_w)
     return j
 
+
+# gradient
+def compute_gradient(X, w, b, Y):
+    m = len(X)
+    n = len(X[0])
+    dj_dw = np.zeros((n,))
+    dj_db = 0
+    for i in range(m):
+        err = compute_f(X[i], w, b) - Y[i]
+        for j in range(n):
+            dj_dw[j] += (err * X[i,j])
+        dj_db += err
+    dj_dw /= m
+    dj_db /= m
+    return dj_dw, dj_db
+
