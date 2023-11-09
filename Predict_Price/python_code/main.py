@@ -4,6 +4,7 @@ import sklearn
 import copy
 import math
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import normalize
 
 
 #load dataset
@@ -20,9 +21,13 @@ for dummy in dummies_columns:
 x = (df.drop('price', axis = 'columns')).values
 y = df['price'].values
 
-#split data
-x_train, x_test, y_train , y_test = train_test_split(x_dataset, y_dataset, test_size = 0.2, shuffle = True)
+#x = normalize(x)
 
+#split data
+x_train, x_test, y_train , y_test = train_test_split(x, y, test_size = 0.2, shuffle = True)
+
+#print(x_train)
+#print(y_train)
 
 
 # pridict output
@@ -41,8 +46,8 @@ def compute_cost(X, w, b, Y):
     error_w = 0.0
     for j in range(len(w)):
         error_w += w[j] ** 2
-    j = error / (2 * m)
-    #+ ((1 / (2 * m)) * error_w)
+    j = error / (2 * m) \
+        #+ ((1 / (2 * m)) * error_w)
     return j
 
 
@@ -81,7 +86,7 @@ def compute_gradient_descent(X, Y, w_in, b_in, alpha, num_iterations):
         J_history.append(cost)
 
         # if i % math.ceil(num_iterations / 1000) == 0:
-        print("iteration: ", i, "   cost: ", cost)
+        print("iteration: ", i + 1, "   cost: ", cost)
 
     return w, b
 
@@ -90,7 +95,7 @@ def compute_gradient_descent(X, Y, w_in, b_in, alpha, num_iterations):
 # test
 initial_w = np.random.rand(len(x_train[0]))
 initial_b = 10000
-alpha = 0.001
+alpha = 0.01
 num_itr = 100
 
 print("start processing")
