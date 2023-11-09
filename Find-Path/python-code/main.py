@@ -2,11 +2,17 @@ import numpy as np
 import pandas as pd
 import heapq
 import math
-from timeit import default_timer as timer
+import time
 from math import radians, sin, cos, sqrt, atan2
 
+
+airport_source = 'Imam Khomeini International Airport'
+airport_destination = 'Raleigh Durham International Airport'
+
+
 #load dataset
-df = pd.read_csv('Flight_Data.csv')
+#df = pd.read_csv('Flight_Data.csv')
+df = pd.read_csv('Dataset.csv')
 
 
 class Node:
@@ -64,7 +70,7 @@ def dijkstra(source_name, destination_name):
             destination (str): The destination node.
 
         Returns:
-            tuple: A tuple containing the shortest distance and the path from source to destination.
+            pervious (): path from source to destination.
 
         Raises:
             ValueError: If the source or destination node is invalid.
@@ -81,7 +87,7 @@ def dijkstra(source_name, destination_name):
      #   return 0, pervious
 
     if source.name == destination.name:
-        return 0, {source: None}
+        return {source: None}
 
     #distance from each airport to destination
     distances = {n: float('inf') for n in nodes.values()}
@@ -92,7 +98,7 @@ def dijkstra(source_name, destination_name):
     while priority_queue:
         #pop airport with minmum distance
         cur_distance, cur_node = heapq.heappop(priority_queue)
-        if cur_node.name == destination.name: return cur_distance, pervious
+        if cur_node.name == destination.name: return pervious
         # Explore neighbors of the current node
         for neighbor, edge in cur_node.neighbors.items():
             weight = compute_weight(edge['Distance'], edge['Price'], edge['FlyTime'])
@@ -118,34 +124,44 @@ def print_info(path):
     total_distance = 0
     total_price = 0
     total_fly_time = 0
+    result_str = ""
 
     for i in range(len(path)):
         node = path[i]
-        print(node.name)
         if i < len(path) - 1:
-            edge = node.neighbors[path[i + 1]]
+            next_node = path[i + 1]
+            edge = node.neighbors[next_node]
+            result_str += ("Flight #"+str(i + 1)+"("+node.neighbors[next_node]['Airline']+")"+"\n")
+            result_str += ("From: "+node.name+" - "+node.city+", "+ node.country+"\n")
+            result_str += ("To: "+next_node.name+" - "+next_node.city+", "+next_node.country+"\n")
+            result_str += ("Duration: {:.2f}km".format(edge['Distance'])+"\n")
+            result_str += ("Time: {:.2f}h".format(edge['FlyTime'])+"\n")
+            result_str += ("Price: {:.2f}$".format(edge['Price'])+"\n")
+            result_str += ("----------------------------"+"\n")
+
             total_distance += edge['Distance']
             total_price += edge['Price']
             total_fly_time += edge['FlyTime']
 
-    print("distance: ", total_distance, "  price: ", total_price, "  fly_time: ", total_fly_time)
+    result_str += ("Total Price: {:.2f}$".format(total_price)+"\n")
+    result_str += ("Total Duration: {:.2f}km".format(total_distance)+"\n")
+    result_str += ("Total Time: {:.2f}h".format(total_fly_time)+"\n")
+    return result_str
 
 
 # test dijkstra algorithm
-airport_source = 'Imam Khomeini International Airport'
-airport_destination = 'Raleigh Durham International Airport'
 
-start_time = timer()
-min_distance, pervious = dijkstra(airport_source, airport_destination)
-end_time = timer()
+start_time = time.time()
+pervious = dijkstra(airport_source, airport_destination)
+elapsed_time = time.time()  - start_time
 
-print("dijkstra")
+str_path_dijkstra = ("Dijkstra Algorithm"+"\n")
+minutes, seconds = divmod(elapsed_time, 60)
+str_path_dijkstra += ("Execution Time: {:.0f}m{:.5f}s".format(minutes, seconds)+"\n")
+str_path_dijkstra += (".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"+"\n")
 
 path = get_path(pervious, airport_destination)
-print_info(path)
-
-time = end_time - start_time
-print("time : ", time)
+str_path_dijkstra += print_info(path)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -228,17 +244,22 @@ def a_star(source_name, destination_name):
 
 
 # test A* algorithm
-airport_source = 'Imam Khomeini International Airport'
-airport_destination = 'Raleigh Durham International Airport'
+start_time = time.time()
+pervious = dijkstra(airport_source, airport_destination)
+elapsed_time = time.time()  - start_time
 
-start_time = timer()
-min_distance, pervious = a_star(airport_source, airport_destination)
-end_time = timer()
-
-print("a*")
+str_path_a_star = ("A* Algorithm"+"\n")
+minutes, seconds = divmod(elapsed_time, 60)
+str_path_a_star += ("Execution Time: {:.0f}m{:.5f}s".format(minutes, seconds)+"\n")
+str_path_a_star += (".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"+"\n")
 
 path = get_path(pervious, airport_destination)
-print_info(path)
+str_path_a_star += print_info(path)
 
-time = end_time - start_time
-print("time : ", time)
+
+# Open the file for writing
+with open('17-UIAI4021-PR1-Q1(A-Star).txt', 'w', encoding='utf-8') as file:
+    # Write the result and time spent to the file
+    file.write(str_path_a_star)
+    print(str_path_a_star)
+
