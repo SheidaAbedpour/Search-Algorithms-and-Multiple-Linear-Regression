@@ -4,7 +4,8 @@ import sklearn
 import copy
 import math
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import r2_score
 
 
 #load dataset
@@ -18,16 +19,19 @@ for dummy in dummies_columns:
     df = df.drop([dummy], axis='columns')
 
 #make x_dataset and y_dataset
-x = (df.drop('price', axis = 'columns')).values
+x = df.drop('price', axis = 'columns')
+scaler = StandardScaler()
+x_normalized = pd.DataFrame(scaler.fit_transform(x), columns=x.columns)
+x = x_normalized.to_numpy()
+
 y = df['price'].values
 
-#x = normalize(x)
 
 #split data
-x_train, x_test, y_train , y_test = train_test_split(x, y, test_size = 0.2, shuffle = True)
+x_train, x_test, y_train , y_test = train_test_split(x, y, test_size = 0.2,random_state = 42, shuffle = True)
 
-#print(x_train)
-#print(y_train)
+#print(type(x_train))
+#print(type(y_train))
 
 
 # pridict output
@@ -36,7 +40,7 @@ def compute_f(x, w, b):
     return f_wb_i
 
 
-# cost function to compute error usin MSE method
+# cost function to compute error using MSE method
 def compute_cost(X, w, b, Y):
     m = len(X)  # size of trainig data
     error = 0.0
@@ -46,7 +50,7 @@ def compute_cost(X, w, b, Y):
     error_w = 0.0
     for j in range(len(w)):
         error_w += w[j] ** 2
-    j = error / (2 * m) \
+    j = error / (2 * m)
         #+ ((1 / (2 * m)) * error_w)
     return j
 
@@ -85,17 +89,25 @@ def compute_gradient_descent(X, Y, w_in, b_in, alpha, num_iterations):
         cost = compute_cost(X, w, b, Y)
         J_history.append(cost)
 
+        f_k = np.ndarray(shape=(X.shape[0],), dtype=float)
+        for k in range(X.shape[0]):
+            f_k[k] = compute_f(X[k], w, b)
+        r2 = r2_score(Y, f_k)
+        #print(f_k)
         # if i % math.ceil(num_iterations / 1000) == 0:
-        print("iteration: ", i + 1, "   cost: ", cost)
+        print("iteration: ", i + 1, "   cost: ", cost, "r2: ", r2)
 
     return w, b
 
 
 
-# test
-initial_w = np.random.rand(len(x_train[0]))
-initial_b = 10000
-alpha = 0.01
+# # test
+# initial_w = np.random.rand(len(x_train[0]))
+# initial_b = np.random.random()
+
+initial_w =  [1300, 0, 800, 900, 1300, 1000, 1000, 2000, 0, 0, 1600, 300, 900, 1500, -4500]
+initial_b = 50000
+alpha = 0.9
 num_itr = 100
 
 print("start processing")
