@@ -61,3 +61,26 @@ def compute_gradient(X, w, b, Y):
     dj_db /= m
     return dj_dw, dj_db
 
+
+
+# gradient descent
+def compute_gradient_descent(X, Y, w_in, b_in, alpha, num_iterations):
+    b = b_in
+    w = copy.deepcopy(w_in)
+
+    J_history = []
+    w_history = []
+    b_history = []
+
+    for i in range(num_iterations):
+        dj_dw, dj_db = compute_gradient(X, w, b, Y)
+        w = w - (alpha * dj_dw)
+        b = b - (alpha * dj_db)
+
+        cost = compute_cost(X, w, b, Y)
+        J_history.append(cost)
+
+        # if i % math.ceil(num_iterations / 1000) == 0:
+        print("iteration: ", i, "   cost: ", cost)
+
+    return w, b
