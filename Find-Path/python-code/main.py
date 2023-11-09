@@ -82,7 +82,23 @@ def get_path(pervious, destination):
     return path
 
 
+def print_info(path):
+    total_distance = 0
+    total_price = 0
+    total_fly_time = 0
+    c_row = None
 
+    for i in range(len(path)):
+
+        if (i < len(path) - 1):
+            c_row = (df[((df['SourceAirport'] == path[i]) & (df['DestinationAirport'] == path[i + 1]))].iloc[0])
+            print(c_row)
+
+            total_distance += c_row['Distance']
+            total_price += c_row['Price']
+            total_fly_time += c_row['FlyTime']
+
+    print("distance: ", total_distance, "  price: ", total_price, "  fly_time: ", total_fly_time)
 
 
 # test dijkstra algorithm
@@ -94,10 +110,10 @@ min_distance, pervious = dijkstra(graph, airport_source, airport_destination)
 end_time = timer()
 
 path = get_path(pervious, airport_destination)
+print_info(path)
 
-print(min_distance)
+print()
 print(" > ".join(path))
-
 time = end_time - start_time
 print("time : ", time)
 
@@ -178,13 +194,17 @@ def a_star(graph, source, destination):
 
 
 # test A* algorithm
+airport_source = 'Imam Khomeini International Airport'
+airport_destination = 'Raleigh Durham International Airport'
+
 start_time = timer()
-min_d, pervious = a_star(graph, airport_source, airport_destination)
+min_distance, pervious = dijkstra(graph, airport_source, airport_destination)
 end_time = timer()
 
 path = get_path(pervious, airport_destination)
+print_info(path)
 
-print(min_d)
+print()
 print(" > ".join(path))
 time = end_time - start_time
 print("time : ", time)
