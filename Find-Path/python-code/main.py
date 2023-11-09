@@ -3,6 +3,7 @@ import pandas as pd
 import heapq
 import math
 from timeit import default_timer as timer
+from math import radians, sin, cos, sqrt, atan2
 
 df = pd.read_csv('Flight_Data.csv')
 #print(df)
@@ -71,7 +72,7 @@ def dijkstra(graph, source, destination):
 
 
 
-            # get path from source to destination
+# get path from source to destination
 def get_path(pervious, destination):
     path = []
     current = destination
@@ -79,6 +80,9 @@ def get_path(pervious, destination):
         path.insert(0, current)
         current = pervious[current]
     return path
+
+
+
 
 
 # test dijkstra algorithm
@@ -99,11 +103,39 @@ print("time : ", time)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-
 # A* algorithm
 
-def heurestic_distance(source, destination):
 
+
+def calculate_distance(lat1, lon1, alt1, lat2, lon2, alt2):
+    # Convert coordinates from degrees to radians
+    lat1_rad = radians(lat1)
+    lon1_rad = radians(lon1)
+    lat2_rad = radians(lat2)
+    lon2_rad = radians(lon2)
+
+    # Earth radius in kilometers
+    earth_radius = 6371.0
+
+    # Calculate differences in coordinates
+    dlat = lat2_rad - lat1_rad
+    dlon = lon2_rad - lon1_rad
+    dalt = alt2 - alt1
+
+    # Haversine formula
+    a = sin(dlat/2)**2 + cos(lat1_rad) * cos(lat2_rad) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+
+    # Calculate distance
+    distance = earth_radius * c
+
+    # Add altitude difference
+    distance += abs(dalt)
+
+    return distance
+
+
+def heurestic_distance(source, destination):
     d1_source = location[source][0]
     d2_source = location[source][1]
     d3_source = location[source][2]
@@ -112,16 +144,13 @@ def heurestic_distance(source, destination):
     d2_destination = location[destination][1]
     d3_destination = location[destination][2]
 
-    d1 = d1_source - d1_destination
-    d2 = d2_source - d2_destination
-    d3 = d3_source - d3_destination
+    heuristic = calculate_distance(d1_source, d2_source, d3_source, d1_destination, d2_destination, d3_destination)
 
-    distance = math.sqrt(d1 ** 2 + d2 ** 2 + d3 ** 2)
-    # price = row['Price']
-    # flyTime = row['FlyTime']
+    # price
+    # flyTime
+    # weight
 
-    # weight = compute_weight(distance, price, flyTime)
-    return distance
+    return heuristic
 
 
 def a_star(graph, source, destination):
