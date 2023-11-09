@@ -1,0 +1,48 @@
+A* Algorithm
+Execution Time: 0m0.01598s
+.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
+Flight #1(Iran Aseman Airlines)
+From: Imam Khomeini International Airport - Tehran, Iran
+To: Zvartnots International Airport - Yerevan, Armenia
+Duration: 792.85km
+Time: 1.76h
+Price: 116.46$
+----------------------------
+Flight #2(Czech Airlines)
+From: Zvartnots International Airport - Yerevan, Armenia
+To: Václav Havel Airport Prague - Prague, Czech Republic
+Duration: 2587.13km
+Time: 4.19h
+Price: 262.12$
+----------------------------
+Flight #3(Jet2.com)
+From: Václav Havel Airport Prague - Prague, Czech Republic
+To: Newcastle Airport - Newcastle, United Kingdom
+Duration: 1206.01km
+Time: 2.14h
+Price: 171.71$
+----------------------------
+Flight #4(Jetstar Airways)
+From: Newcastle Airport - Newcastle, United Kingdom
+To: Melbourne International Airport - Melbourne, Australia
+Duration: 834.64km
+Time: 1.42h
+Price: 117.19$
+----------------------------
+Flight #5(American Airlines)
+From: Melbourne International Airport - Melbourne, Australia
+To: Charlotte Douglas International Airport - Charlotte, United States
+Duration: 791.23km
+Time: 1.67h
+Price: 144.41$
+----------------------------
+Flight #6(American Airlines)
+From: Charlotte Douglas International Airport - Charlotte, United States
+To: Raleigh Durham International Airport - Raleigh-durham, United States
+Duration: 208.51km
+Time: 0.90h
+Price: 97.23$
+----------------------------
+Total Price: 909.12$
+Total Duration: 6420.38km
+Total Time: 12.08h
