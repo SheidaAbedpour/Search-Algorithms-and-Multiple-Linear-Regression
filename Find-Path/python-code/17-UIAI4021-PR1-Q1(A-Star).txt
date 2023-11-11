@@ -1,5 +1,5 @@
 A* Algorithm
-Execution Time: 0m0.01598s
+Execution Time: 0m0.00803s
 .-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
 Flight #1(Iran Aseman Airlines)
 From: Imam Khomeini International Airport - Tehran, Iran
