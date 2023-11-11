@@ -9,8 +9,6 @@ from math import radians, sin, cos, sqrt, atan2
 airport_source = 'Imam Khomeini International Airport'
 airport_destination = 'Raleigh Durham International Airport'
 
-
-#load dataset
 #df = pd.read_csv('Flight_Data.csv')
 df = pd.read_csv('Dataset.csv')
 
@@ -48,9 +46,7 @@ for _,row in df.iterrows():
     nodes[source].add_neighbor(nodes[destination], row['Airline'], row['Distance'], row['Price'], row['FlyTime'])
 
 
-# compte weight of graph based on distance, price and flyTime
 def compute_weight(distance, price, flyTime):
-
     w_distance = 1.7
     w_price = 1.2
     w_flyTime = 1.1
@@ -58,59 +54,36 @@ def compute_weight(distance, price, flyTime):
     weight = (w_distance * distance) + (w_price * price) + (w_flyTime * flyTime)
     return weight
 
-
-
-# dijkstra algorithm
 def dijkstra(source_name, destination_name):
-    """
-        Dijkstra's algorithm to find the shortest path in a graph from a source node to a destination node.
-
-        Args:
-            source (str): The source node.
-            destination (str): The destination node.
-
-        Returns:
-            pervious (): path from source to destination.
-
-        Raises:
-            ValueError: If the source or destination node is invalid.
-
-        """
-
     source = nodes[source_name]
     destination = nodes[destination_name]
-
-    # Previous nodes to track the path
-    pervious = {n: None for n in nodes.values()}
-
-    #if source not in nodes or destination not in nodes:
-     #   return 0, pervious
 
     if source.name == destination.name:
         return {source: None}
 
-    #distance from each airport to destination
+    pervious = {n: None for n in nodes.values()}
     distances = {n: float('inf') for n in nodes.values()}
+
     distances[source] = 0
-    # Priority queue initialized with (cost, node)
     priority_queue = [(0, source)]
 
+    counter_dijkstra = 0
     while priority_queue:
-        #pop airport with minmum distance
+        counter_dijkstra += 1
         cur_distance, cur_node = heapq.heappop(priority_queue)
-        if cur_node.name == destination.name: return pervious
-        # Explore neighbors of the current node
+
+        if cur_node.name == destination.name:
+            return cur_distance, pervious
+
         for neighbor, edge in cur_node.neighbors.items():
             weight = compute_weight(edge['Distance'], edge['Price'], edge['FlyTime'])
             new_distance = cur_distance + weight
-            # Update distance of neighbors and previous node if a shorter path is found
             if new_distance < distances[neighbor]:
                 distances[neighbor] = new_distance
                 pervious[neighbor] = cur_node
                 heapq.heappush(priority_queue, (new_distance, neighbor))
 
 
-# get path from source to destination
 def get_path(pervious, destination):
     path = []
     current = nodes[destination]
@@ -118,7 +91,6 @@ def get_path(pervious, destination):
         path.insert(0, current)
         current = pervious[current]
     return path
-
 
 def print_info(path):
     total_distance = 0
@@ -149,10 +121,8 @@ def print_info(path):
     return result_str
 
 
-# test dijkstra algorithm
-
 start_time = time.time()
-pervious = dijkstra(airport_source, airport_destination)
+num_visited_nodes, pervious = dijkstra(airport_source, airport_destination)
 elapsed_time = time.time()  - start_time
 
 str_path_dijkstra = ("Dijkstra Algorithm"+"\n")
@@ -162,12 +132,11 @@ str_path_dijkstra += (".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"+"\n")
 
 path = get_path(pervious, airport_destination)
 str_path_dijkstra += print_info(path)
+print(str_path_dijkstra)
+print("number of visited nodes: ", num_visited_nodes, "\n")
 
-
+print("***********************")
 # ----------------------------------------------------------------------------------------------------------------------
-# A* algorithm
-
-
 
 def calculate_distance(lat1, lon1, alt1, lat2, lon2, alt2):
     # Convert coordinates from degrees to radians
@@ -193,9 +162,7 @@ def calculate_distance(lat1, lon1, alt1, lat2, lon2, alt2):
 
     # Add altitude difference
     distance += abs(dalt)
-
     return distance
-
 
 def heurestic_distance(source, destination):
     d1_source = source.latitude
@@ -206,14 +173,10 @@ def heurestic_distance(source, destination):
     d2_destination = destination.longitude
     d3_destination = destination.altitude
 
-    heuristic = calculate_distance(d1_source, d2_source, d3_source, d1_destination, d2_destination, d3_destination)
-
-    # price
-    # flyTime
-    # weight
-
+    heuristic = math.sqrt(((d1_source - d1_destination) ** 2) + ((d2_source - d2_destination) ** 2) +
+                          ((d3_source - d3_destination) ** 2))
+    #heuristic = calculate_distance(d1_source, d2_source, d3_source, d1_destination, d2_destination, d3_destination)
     return heuristic
-
 
 def a_star(source_name, destination_name):
 
@@ -222,17 +185,20 @@ def a_star(source_name, destination_name):
 
     g = {n: float('inf') for n in nodes.values()}
     f = {n: float('inf') for n in nodes.values()}
-
-    priority_queue = [(0, source)]
     pervious = {n: None for n in nodes.values()}
+    priority_queue = [(0, source)]
 
     g[source] = 0
     f[source] = heurestic_distance(source, destination)
 
+    counter_a_star = 0
     while priority_queue:
+        counter_a_star += 1
         cur_distance, cur_node = heapq.heappop(priority_queue)
+
         if cur_node.name == destination.name:
-            return cur_distance, pervious
+            return counter_a_star, pervious
+
         for neighbor, edge in cur_node.neighbors.items():
             weight = edge['Distance']
             new_distance = g[cur_node] + weight
@@ -243,9 +209,8 @@ def a_star(source_name, destination_name):
                 heapq.heappush(priority_queue, (f[neighbor], neighbor))
 
 
-# test A* algorithm
 start_time = time.time()
-pervious = dijkstra(airport_source, airport_destination)
+num_visited_nodes, pervious = a_star(airport_source, airport_destination)
 elapsed_time = time.time()  - start_time
 
 str_path_a_star = ("A* Algorithm"+"\n")
@@ -255,11 +220,9 @@ str_path_a_star += (".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"+"\n")
 
 path = get_path(pervious, airport_destination)
 str_path_a_star += print_info(path)
-
+print(str_path_a_star)
+print("number of visited nodes: ", num_visited_nodes)
 
 # Open the file for writing
 with open('17-UIAI4021-PR1-Q1(A-Star).txt', 'w', encoding='utf-8') as file:
-    # Write the result and time spent to the file
     file.write(str_path_a_star)
-    print(str_path_a_star)
-
