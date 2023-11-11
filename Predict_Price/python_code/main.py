@@ -101,7 +101,7 @@ def compute_gradient_descent(X, Y, w_in, b_in, alpha, num_iterations):
 initial_w = np.zeros(len(x[0]))
 initial_b = 0
 alpha = 0.1
-num_itr = 60
+num_itr = 1
 
 start_time = time.time()
 J_his, w, b = compute_gradient_descent(x_train, y_train, initial_w, initial_b, alpha, num_itr)
@@ -115,8 +115,10 @@ for i in range(len(w)):
     result += (str(w[i]) + " * " + df_x.columns[i])
     if i != len(w) - 1:
         result += " + "
+    else:
+        result += "\n"
 
-result += ("Traning Time: ",elapsed_time,"s\n")
+result += ("Traning Time: " + str(elapsed_time) + "s\n")
 
 y_predict = []
 for x in x_test:
@@ -128,12 +130,13 @@ mae = mean_absolute_error(y_test, y_predict)
 r2 = r2_score(y_test, y_predict)
 
 result += ("Logs:")
-result += ("MSE: ", mse)
-result += ("RMSE: ",rmse)
-result += ("MAE: ",mae)
-result += ("R2: ",r2)
+result += ("MSE: " + str(mse) + "\n")
+result += ("RMSE: " + str(rmse) + "\n")
+result += ("MAE: " + str(mae) + "\n")
+result += ("R2: " + str(r2) + "\n")
 
 
 with open('17-UIAI4021-PR1-Q2.txt', 'w', encoding='utf-8') as file:
     file.write(result)
 
+print(result)
