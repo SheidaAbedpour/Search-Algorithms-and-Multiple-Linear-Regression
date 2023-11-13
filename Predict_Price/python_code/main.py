@@ -12,6 +12,7 @@ import time
 # read data and store it in a dataframe
 df = pd.read_csv('Flight_Price_Dataset_Q2.csv')
 
+actual_price = df['price'].values
 
 # encoding data
 dummies_columns = ['class']
@@ -200,6 +201,8 @@ print(result)
 
 
 # Inverse transform the standardized values to get the actual values
-scaler = StandardScaler()
-scaler.fit(y_train.reshape(-1, 1))
+scaler.fit(actual_price.reshape(-1, 1))
 y_predict_actual = scaler.inverse_transform(np.array(y_predict).reshape(-1, 1))
+y_actual = scaler.inverse_transform(np.array(y_test).reshape(-1, 1))
+# print(y_actual[:10])
+# print(y_predict_actual[:10])
