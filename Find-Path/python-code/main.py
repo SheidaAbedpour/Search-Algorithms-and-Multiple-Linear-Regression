@@ -5,12 +5,15 @@ import math
 import time
 from math import radians, sin, cos, sqrt, atan2
 
-
+# inputs
 airport_source = 'Imam Khomeini International Airport'
 airport_destination = 'Raleigh Durham International Airport'
 
-#df = pd.read_csv('Flight_Data.csv')
+
+# read data and store it in a dataframe
 df = pd.read_csv('Dataset.csv')
+#df = pd.read_csv('Flight_Data.csv')
+
 
 
 class Node:
@@ -27,11 +30,16 @@ class Node:
         self.neighbors[neighbor] = {'Airline': airline, 'Distance': distance, 'Price': price, 'FlyTime': fly_time}
 
 
+
+# ------------------------------------------ Graph ---------------------------------------------------------------------
+# Dictionary to store airport nodes and their connections
 nodes = {}
+# Iterate over each row in the dataframe to construct the airport graph
 for _,row in df.iterrows():
     source = row['SourceAirport']
     destination = row['DestinationAirport']
 
+    # Check if the airport is already a node, if not, create a new node
     if source not in nodes:
         nodes[source] = Node(row['SourceAirport'],
                              row['SourceAirport_City'], row['SourceAirport_Country'],
@@ -43,10 +51,27 @@ for _,row in df.iterrows():
                                   row['DestinationAirport_Latitude'], row['DestinationAirport_Longitude'],
                                   row['DestinationAirport_Altitude'])
 
+    # Establish a neighbor relationship between the source and destination airports
     nodes[source].add_neighbor(nodes[destination], row['Airline'], row['Distance'], row['Price'], row['FlyTime'])
 
 
+
+#-------------------------------------------- Dijkstra------------------------------------------------------------------
+
 def compute_weight(distance, price, flyTime):
+    """
+    Calculates the weight based on the given distance, price, and fly time.
+
+    Parameters:
+    - distance (float): The distance between the source and destination.
+    - price (float): The price of the flight.
+    - flyTime (float): The duration of the flight.
+
+    Returns:
+    - weight (float): The computed weight based on the provided inputs.
+    """
+
+    # Define the weights
     w_distance = 1.7
     w_price = 1.2
     w_flyTime = 1.1
@@ -55,11 +80,20 @@ def compute_weight(distance, price, flyTime):
     return weight
 
 def dijkstra(source_name, destination_name):
+    """
+       Performs Dijkstra's algorithm to find the best path from a source node to a destination node.
+
+       Parameters:
+       - source_name (str): The name of the source node.
+       - destination_name (str): The name of the destination node.
+
+       Returns:
+       - distance (float): The shortest distance from the source to other nodes.
+       - previous (dict): A dictionary mapping each node to its previous node in the shortest path.
+       """
+
     source = nodes[source_name]
     destination = nodes[destination_name]
-
-    if source.name == destination.name:
-        return {source: None}
 
     pervious = {n: None for n in nodes.values()}
     distances = {n: float('inf') for n in nodes.values()}
@@ -84,12 +118,26 @@ def dijkstra(source_name, destination_name):
                 heapq.heappush(priority_queue, (new_distance, neighbor))
 
 
+
 def get_path(pervious, destination):
+    """
+    Retrieves the path from the source node to the destination node based on the previous nodes.
+
+    Parameters:
+    - previous (dict): A dictionary mapping each node to its previous node in the shortest path.
+    - destination (str): The name of the destination node.
+
+    Returns:
+    - path (list): A list of nodes representing the path from the source to the destination.
+    """
+
     path = []
     current = nodes[destination]
+
     while current is not None:
         path.insert(0, current)
         current = pervious[current]
+
     return path
 
 def print_info(path):
@@ -132,12 +180,19 @@ str_path_dijkstra += (".-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-"+"\n")
 
 path = get_path(pervious, airport_destination)
 str_path_dijkstra += print_info(path)
+
+# Open the file for writing
+with open('17-UIAI4021-PR1-Q1(Dijkstra).txt', 'w', encoding='utf-8') as file:
+    file.write(str_path_dijkstra)
+
 print(str_path_dijkstra)
 print("number of visited nodes: ", num_visited_nodes, "\n")
 
 print("***********************")
-# ----------------------------------------------------------------------------------------------------------------------
 
+
+
+#-------------------------------------------------- A-Star -------------------------------------------------------------
 def calculate_distance(lat1, lon1, alt1, lat2, lon2, alt2):
     # Convert coordinates from degrees to radians
     lat1_rad = radians(lat1)
@@ -165,6 +220,17 @@ def calculate_distance(lat1, lon1, alt1, lat2, lon2, alt2):
     return distance
 
 def heurestic_distance(source, destination):
+    """
+       Calculates the heuristic distance between a source node and a destination node.
+
+       Parameters:
+       - source (Node): The source node.
+       - destination (Node): The destination node.
+
+       Returns:
+       - heuristic (float): The calculated heuristic distance.
+       """
+
     d1_source = source.latitude
     d2_source = source.longitude
     d3_source = source.altitude
@@ -179,6 +245,17 @@ def heurestic_distance(source, destination):
     return heuristic
 
 def a_star(source_name, destination_name):
+    """
+    Performs the A* algorithm to find the shortest path from a source node to a destination node.
+
+    Parameters:
+    - source_name (str): The name of the source node.
+    - destination_name (str): The name of the destination node.
+
+    Returns:
+    - counter_a_star (int): The number of iterations performed in the A* algorithm.
+    - previous (dict): A dictionary mapping each node to its previous node in the shortest path.
+    """
 
     source = nodes[source_name]
     destination = nodes[destination_name]
