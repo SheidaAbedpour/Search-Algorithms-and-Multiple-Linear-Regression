@@ -146,7 +146,7 @@ def compute_gradient_descent(X, Y, w_in, b_in, alpha, num_iterations):
         J_history.append(cost)
 
         # if i % math.ceil(num_iterations / 10) == 0:
-        #print("iteration: ", i + 1, "   cost: ", cost)
+        # print("iteration: ", i + 1, "   cost: ", cost)
 
     return J_history, w, b
 
@@ -197,3 +197,9 @@ with open('17-UIAI4021-PR1-Q2.txt', 'w', encoding='utf-8') as file:
     file.write(result)
 
 print(result)
+
+
+# Inverse transform the standardized values to get the actual values
+scaler = StandardScaler()
+scaler.fit(y_train.reshape(-1, 1))
+y_predict_actual = scaler.inverse_transform(np.array(y_predict).reshape(-1, 1))
